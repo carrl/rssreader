@@ -12,8 +12,13 @@ Screenshot
 
 * ubuntu
 * apache
-* python 2.X
 * sqlite3
+* python 2.X
+  * sqlite3
+  * json
+  * yaml
+
+ps: python 有使用到的套件要記得安裝
 	
 安裝
 ----
