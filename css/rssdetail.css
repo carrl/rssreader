@@ -1,0 +1,74 @@
+
+#rssd-title {
+    background-color:#f1f1f1;
+    margin:1px;
+    padding:5px 5px;
+}
+
+#rssd-title:hover {
+    cursor:pointer;
+}
+
+#rssd-detail {
+    padding:0 10px;
+}
+
+.rssd-detail-title {
+    font-size:20px;
+    color:blue;
+}
+
+.rssd-detail-author {
+    font-size:12px;
+    color:#696969;
+}
+
+.rssd-detail-content {
+    margin-top:10px;
+}
+
+#showmode_button {
+    width:120px;
+}
+
+#showmode {
+    position:absolute;
+    background-color:#f5f5f5;
+    width:180px;
+    border:solid 2px #cccccc;
+}
+
+.showmode-item {
+    margin:3px;
+    padding:3px;
+    font-size:large;
+    text-align:left;
+}
+
+.showmode-item:hover {
+    cursor:pointer;
+    background-color:#afeeee;
+}
+
+#showmode1 {
+    float:left;
+    width:20px;
+    height:20px
+    text-align:center;
+    vertical-align:center;
+}
+
+#showmode2 {
+    float:left;
+    width:20px;
+    height:20px
+    text-align:center;
+    vertical-align:center;
+}
+
+.rssd_cancel_button {
+    width:100px;
+    background-color:#D64937;
+    color:white;
+    margin:0 0 0 30px;
+}

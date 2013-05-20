@@ -1,0 +1,3 @@
+- db: "../../db/rssdata.db"
+  log: "../../db/rsslog.txt"
+

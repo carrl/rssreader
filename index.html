@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Lanuage" content="zh-tw">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>RSS reader</title>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="js/jquery.blockUI.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/rssdetail.css" />
+    <link type="text/css" rel="stylesheet" href="css/main.css" />
+  </head>
+
+  <body>
+    <div id="my-banner">
+      <div class="my-title-div">
+        <span class="my-title" onclick="start()">RSS reader</span><span class="my-title-ver">beta</span>
+        <span id="my-userid">userid</span>
+      </div>
+      <div id="my-msg-div"><span id="my-msg-span">訊息區</span></div>
+    </div>
+
+    <div class="menu-div">
+      <div id="addweb-div"></div>
+      <div id="menu-td">
+	<div id="menu">
+	</div>
+      </div>
+    </div>
+
+    <div id="rss-toolbar"></div>
+    <div id="main-td">
+      <div id="rss-title"></div>
+      <div id="main"></div>
+    </div>
+
+    <script type="text/javascript" src="js/rssdetail.js"></script>
+    <script type="text/javascript" src="js/menu.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+  </body>
+</html>
