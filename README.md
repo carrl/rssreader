@@ -5,7 +5,8 @@ RSS reader
 
 Screenshot
 ----------
-![圖片1](https://github.com/carrl/rssreader/raw/master/screenshot/screenshot1.png)
+![圖片2](https://github.com/carrl/rssreader/raw/master/screenshot/screenshot2.png)
+![圖片3](https://github.com/carrl/rssreader/raw/master/screenshot/screenshot3.png)
 
 我的環境
 --------
@@ -25,8 +26,8 @@ ps: python 有使用到的套件要記得安裝
 * git clone https://github.com/carrl/rssreader.git
 * cd rssreader
 * cd install
-* python setup.py (只有第一次安裝時要執行)
-* python patchdb.py
+* python ./setup.py (只有第一次安裝時要執行)
+* sh ./patchdb.sh
 
 apache 設定
 -----------
