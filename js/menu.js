@@ -48,7 +48,11 @@ function menu_click(it, link) {
     var menu_title = $(it).text();
     jQuery("#main").html(menu_title);
     if ((typeof(link) != "undefined") && (link != "")) {
-	rssd_list(link);
+	if (link == "star") {	// 星號 list
+	    rssd_list(1, "");
+	}  else {		// 一般
+	    rssd_list(0, link);
+	}
     }
 }
 

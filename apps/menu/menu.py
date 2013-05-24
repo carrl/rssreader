@@ -40,5 +40,6 @@ if __name__ == "__main__" :
 
     rsslist = rsslist()
 
-    menuobj = [{"title": "訂閱", "sub": rsslist}]
+    # menuobj = [{"title": "訂閱", "sub": rsslist}]
+    menuobj = [{"title": "星號", "link":"star", "sub":[]} ,{"title": "訂閱", "sub": rsslist}]
     print json.dumps(menuobj)

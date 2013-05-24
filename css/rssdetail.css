@@ -3,6 +3,7 @@
     background-color:#f1f1f1;
     margin:1px;
     padding:5px 5px;
+    overflow:auto;
 }
 
 #rssd-title:hover {
@@ -71,4 +72,54 @@
     background-color:#D64937;
     color:white;
     margin:0 0 0 30px;
+}
+
+.star {
+    float:left;
+    width:19px;
+    height:19px;
+    padding:5px 5px;
+    background-color:#f1f1f1;
+    background-image:url(../images/star0.png);
+    background-repeat:no-repeat;
+    background-position:center center; 
+}
+
+.star:hover {
+    cursor:pointer;
+    background-image:url(../images/star0-hover.png);
+}
+
+.star1 {
+    float:left;
+    width:19px;
+    height:19px;
+    padding:5px 5px;
+    background-color:#f1f1f1;
+    background-image:url(../images/star1.png);
+    background-repeat:no-repeat;
+    background-position:center center; 
+}
+
+.star1:hover {
+    cursor:pointer;
+    background-image:url(../images/star1-hover.png);
+}
+
+.rssd-main-title {
+    float:left;
+    width:200px;
+    margin-right:10px;
+    overflow:hidden;
+    white-space:nowrap;
+}
+
+.rssd-title-title {
+    float:left;
+    overflow:hidden;
+    white-space:nowrap;
+}
+
+.rssd-title-date {
+    float:right;
 }

@@ -45,7 +45,7 @@ function addweb_submit() {
 					jQuery("#menu-td").scrollTop(0);
 					var my_menu_pos = jQuery("#menu_"+my_hashid).parent().position();
 					jQuery("#menu-td").scrollTop(my_menu_pos.top - jQuery("#my-banner").outerHeight() - jQuery("#addweb-div").outerWidth());
-					rssd_list(my_hashid);
+					rssd_list(0, my_hashid);
 
 					$.unblockUI();
 				    });
@@ -84,15 +84,17 @@ function rssd_cancel(hashid) {
     }
 }
 
-function rssd_list(hashid) {
+function rssd_list(atype ,hashid) {
     // 顯示某網頁的 rss 列表
+
+    jQuery("#main-td").unbind("scroll");
 
     rss_hashid = hashid;
     rssdlast = 0;
     rssdloading = 0;
 
     $.ajaxSetup({ cache: false });
-    var rssd_list_url = "apps/rssdetail/rssd_list.py?id=" + hashid + "&showmode=" + show_mode;
+    var rssd_list_url = "apps/rssdetail/rssd_list.py?type=" + atype + "&id=" + hashid + "&showmode=" + show_mode;
     $.ajaxSettings.async = false;
     $.getJSON(rssd_list_url,
 	  function(data) {
@@ -101,11 +103,19 @@ function rssd_list(hashid) {
 
 	      for (var i=0; i<rssd_list.length; i++) {
 		  rssd_list_str += "<div id='rssd-list-" + rssd_list[i].id + "' style='border-bottom:2px solid #dddddd;'>";
-		  rssd_list_str += "<div id='rssd-title' onclick='rssd_detail(" + rssd_list[i].id + ")'>";
-		  if (rssd_list[i].readed != 1) {
-		      rssd_list_str += "<span id='rssd-title-title' style='font-weight:bold;'>" + rssd_list[i].title + "</span>";
+		  if (rssd_list[i].star == 1) {
+		      rssd_list_str += "<div class='star1' onclick='starclick(this, " + rssd_list[i].id + ");'></div>";
 		  } else {
-		      rssd_list_str += "<span id='rssd-title-title' style='font-weight:100;'>" + rssd_list[i].title + "</span>";
+		      rssd_list_str += "<div class='star' onclick='starclick(this, " + rssd_list[i].id + ");'></div>";
+		  }
+		  rssd_list_str += "<div id='rssd-title' onclick='rssd_detail(" + rssd_list[i].id + ")'>";
+		  if (atype == 1) {
+		      rssd_list_str += "<div class='rssd-main-title'>" + rssd_list[i].main_title + "</div>";
+		  }
+		  if (rssd_list[i].readed != 1) {
+		      rssd_list_str += "<div class='rssd-title-title' style='font-weight:bold;'>" + rssd_list[i].title + "</div>";
+		  } else {
+		      rssd_list_str += "<div class='rssd-title-title' style='font-weight:100;'>" + rssd_list[i].title + "</div>";
 		  }
 		  var pubdate = new Date();
 		  pubdate.setTime(rssd_list[i].pubdate * 1000);
@@ -113,43 +123,57 @@ function rssd_list(hashid) {
 		  var amonth = pubdate.getMonth() + 1;
 		  var aday = pubdate.getDate();
 
-		  rssd_list_str += "<span style='float:right;'>" + ayear + "-" + amonth + "-" + aday + "</span>";
+		  rssd_list_str += "<div class='rssd-title-date'>" + ayear + "-" + amonth + "-" + aday + "</div>";
+
 		  rssd_list_str += "</div>";
 		  rssd_list_str += "<div id='rssd-detail'></div>";
 		  rssd_list_str += "</div>";
 	      }
 
 	      var toolbar_str = "";
-	      toolbar_str += "<button onclick='rssd_reload(\"" + hashid +"\")'>reload</button>&nbsp;";
-	      toolbar_str += "<button onclick='rssd_markasread(\"" + hashid + "\")'>全部標示為已閱讀</button>&nbsp;";
-	      toolbar_str += "<button id='showmode_button' onclick='showmode(this)'>show mode</button>";
-	      toolbar_str += "<div id='showmode' style='display:none;'>";
-	      toolbar_str += "<div class='showmode-item' onclick='showmode_choice(1)'><div id='showmode1'>&nbsp;</div>顯示全部</div>";
-	      toolbar_str += "<div class='showmode-item' onclick='showmode_choice(2)'><div id='showmode2'>&nbsp;</div>僅顯示未閱讀</div>";
-	      toolbar_str += "</div>&nbsp;";
-	      toolbar_str += "<button class='rssd_cancel_button' onclick='rssd_cancel(\"" + hashid +"\")'>取消訂閱</button>&nbsp;";
+	      if (atype == 0) {
+		  toolbar_str += "<button onclick='rssd_reload(\"" + hashid +"\")'>reload</button>&nbsp;";
+		  toolbar_str += "<button onclick='rssd_markasread(\"" + hashid + "\")'>全部標示為已閱讀</button>&nbsp;";
+		  toolbar_str += "<button id='showmode_button' onclick='showmode(this)'>show mode</button>";
+		  toolbar_str += "<div id='showmode' style='display:none;'>";
+		  toolbar_str += "<div class='showmode-item' onclick='showmode_choice(1)'><div id='showmode1'>&nbsp;</div>顯示全部</div>";
+		  toolbar_str += "<div class='showmode-item' onclick='showmode_choice(2)'><div id='showmode2'>&nbsp;</div>僅顯示未閱讀</div>";
+		  toolbar_str += "</div>&nbsp;";
+		  toolbar_str += "<button class='rssd_cancel_button' onclick='rssd_cancel(\"" + hashid +"\")'>取消訂閱</button>&nbsp;";
+	      } else if (atype == 1) {
+		  toolbar_str += "<button onclick='rssd_list(1, \"\")'>reload</button>&nbsp;";
+	      }
 
 	      jQuery("#rss-toolbar").html(toolbar_str);
 	      jQuery("#rss-title").html(data.title);
 	      jQuery("#main").html(rssd_list_str);
 
+	      // alert(jQuery(".rssd-main-title").html());
+	      var title_title_width = jQuery("#rssd-title").outerWidth() - jQuery(".rssd-main-title").outerWidth() - jQuery(".rssd-title-date").outerWidth() - 40;
+	      // alert(title_title_width);
+	      jQuery("#rssd-title .rssd-title-title").css({"width":title_title_width});
+
 	      // 更新 unreadcnt
-	      if (data["unreadcnt"] != 0) {
-		  jQuery("#unread-"+data["hashid"]).text(data["unreadcnt"]);
-	      } else {
-		  jQuery("#unread-"+data["hashid"]).text("");
+	      if (atype == 0) {
+		  if (data["unreadcnt"] != 0) {
+		      jQuery("#unread-"+data["hashid"]).text(data["unreadcnt"]);
+		  } else {
+		      jQuery("#unread-"+data["hashid"]).text("");
+		  }
 	      }
 	  });
     $.ajaxSettings.async = true;
 
     jQuery("#main-td").scrollTop(0);
 
-    showmode_button_title();
+    if (atype == 0) {
+	showmode_button_title();
+    }
 
     $("#main-td").scroll(function() {
 	if (rssdloading != 1) {
 	    if ($("#main-td").height() + $("#main-td").scrollTop() >= $("#main").height()-100) {
-		loadmoredata();
+		loadmoredata(atype);
 	    }
 	}
     });
@@ -169,7 +193,8 @@ function rssd_detail(id) {
 	    var descination = jQuery(rssd_list_obj).position().top;
 	    jQuery(rssd_detail_obj).show();
 	    jQuery("#main-td").scrollTop(descination - jQuery("#rss-toolbar").outerHeight() - jQuery("#my-banner").outerHeight());
-	    jQuery(rssd_title_obj).css("background", "#c1ffc1");
+	    jQuery(rssd_title_obj).css("background-color", "#c1ffc1");
+	    jQuery(rssd_title_obj).siblings(":first").css("background-color", "#c1ffc1");
 	    rssd_detail_readed(rssd_title_obj, id);
 	} else {
 	    jQuery(rssd_detail_obj).hide();
@@ -195,19 +220,22 @@ function rssd_detail(id) {
 		  });
 	$.ajaxSettings.async = true;
 	jQuery("#main-td").scrollTop(descination - jQuery("#rss-toolbar").outerHeight() - jQuery("#my-banner").outerHeight());
-	jQuery(rssd_title_obj).css("background", "#c1ffc1");
+	jQuery(rssd_title_obj).css("background-color", "#c1ffc1");
+	jQuery(rssd_title_obj).siblings(":first").css("background-color", "#c1ffc1");
 	rssd_detail_readed(rssd_title_obj, id);
     }
 }
 
 function rssd_list_unselect() {
     // 將所有的 rssd-title 都改回原底色
-    jQuery("#main").find("#rssd-title").css("background", "#f1f1f1");
+    jQuery("#main").find(".star").css("background-color", "#f1f1f1");
+    jQuery("#main").find(".star1").css("background-color", "#f1f1f1");
+    jQuery("#main").find("#rssd-title").css("background-color", "#f1f1f1");
 }
 
 function rssd_detail_readed(aobj, id) {
     // 已經閱讀
-    jQuery(aobj).find("#rssd-title-title").css("font-weight", "200");
+    jQuery(aobj).find(".rssd-title-title").css("font-weight", "100");
 
     $.ajaxSetup({ cache: false });
     var rssd_readed_url = "apps/rssdetail/rssd_readed.py?id=" + id;
@@ -235,7 +263,7 @@ function rssd_markasread(hashid) {
 	  });
     $.ajaxSettings.async = true;
 
-    rssd_list(hashid);
+    rssd_list(0, hashid);
 }
 
 function rssd_reload(hashid) {
@@ -247,14 +275,14 @@ function rssd_reload(hashid) {
     // $.ajaxSettings.async = false;
     $.getJSON(rss_rss2db_url,
 	      function(data) {
-		  rssd_list(hashid);
+		  rssd_list(0, hashid);
 		  jQuery.unblockUI();
 	      });
     // $.ajaxSettings.async = true;
 }
 
 function showmode(it) {
-    // 顯示 顯示型態 讓 user 選擇 
+    // 顯示 顯示型態 讓 user 選擇
     var element = it;
     var apos = $(element).offset();
 
@@ -278,7 +306,7 @@ function showmode_choice(mode) {
     // 改變 showmode, 並重新顯示
     show_mode = mode;
 
-    rssd_list(rss_hashid);
+    rssd_list(0, rss_hashid);
 }
 
 function showmode_button_title() {
@@ -290,7 +318,7 @@ function showmode_button_title() {
     }
 }
 
-function loadmoredata() {
+function loadmoredata(atype) {
     // load 進更多資料
     rssdloading = 1;
     if (rssdlast != 1) {
@@ -299,7 +327,7 @@ function loadmoredata() {
 	    var lastid = last_rssdlist.split("-").reverse()[0];
 
 	    $.ajaxSetup({ cache: false });
-	    var rssd_loadmoredata_url = "apps/rssdetail/rssd_list.py?id=" + rss_hashid + "&showmode=" + show_mode + "&lastid=" + lastid;
+	    var rssd_loadmoredata_url = "apps/rssdetail/rssd_list.py?type=" + atype + "&id=" + rss_hashid + "&showmode=" + show_mode + "&lastid=" + lastid;
 	    $.ajaxSettings.async = false;
 	    $.getJSON(rssd_loadmoredata_url,
     		      function(data) {
@@ -309,11 +337,19 @@ function loadmoredata() {
 			      for (var i=0; i<rssd_list.length; i++) {
 				  var rssd_list_str = "";
 				  rssd_list_str += "<div id='rssd-list-" + rssd_list[i].id + "' style='border-bottom:2px solid #dddddd;'>";
-				  rssd_list_str += "<div id='rssd-title' onclick='rssd_detail(" + rssd_list[i].id + ")'>";
-				  if (rssd_list[i].readed != 1) {
-				      rssd_list_str += "<span id='rssd-title-title' style='font-weight:bold;'>" + rssd_list[i].title + "</span>";
+				  if (rssd_list[i].star == 1) {
+				      rssd_list_str += "<div class='star1' onclick='starclick(this, " + rssd_list[i].id + ");'></div>";
 				  } else {
-				      rssd_list_str += "<span id='rssd-title-title' style='font-weight:100;'>" + rssd_list[i].title + "</span>";
+				      rssd_list_str += "<div class='star' onclick='starclick(this, " + rssd_list[i].id + ");'></div>";
+				  }
+				  rssd_list_str += "<div id='rssd-title' onclick='rssd_detail(" + rssd_list[i].id + ")'>";
+				  if (atype == 1) {
+				      rssd_list_str += "<div class='rssd-main-title'>" + rssd_list[i].main_title + "</div>";
+				  }
+				  if (rssd_list[i].readed != 1) {
+				      rssd_list_str += "<div class='rssd-title-title' style='font-weight:bold;'>" + rssd_list[i].title + "</div>";
+				  } else {
+				      rssd_list_str += "<div class='rssd-title-title' style='font-weight:100;'>" + rssd_list[i].title + "</div>";
 				  }
 				  var pubdate = new Date();
 				  pubdate.setTime(rssd_list[i].pubdate * 1000);
@@ -321,7 +357,7 @@ function loadmoredata() {
 				  var amonth = pubdate.getMonth() + 1;
 				  var aday = pubdate.getDate();
 
-				  rssd_list_str += "<span style='float:right;'>" + ayear + "-" + amonth + "-" + aday + "</span>";
+				  rssd_list_str += "<div class='rssd-title-date'>" + ayear + "-" + amonth + "-" + aday + "</div>";
 				  rssd_list_str += "</div>";
 				  rssd_list_str += "<div id='rssd-detail'></div>";
 				  rssd_list_str += "</div>";
@@ -331,10 +367,38 @@ function loadmoredata() {
 			  } else {
 			      rssdlast = 1; // 已經到最後了
 			  }
-			  
+
     		      });
 	}
 	$.ajaxSettings.async = true;
     }
     rssdloading = 0;
+
+    var title_title_width = jQuery("#rssd-title").outerWidth() - jQuery(".rssd-main-title").outerWidth() - jQuery(".rssd-title-date").outerWidth() - 40;
+    // alert(title_title_width);
+    jQuery("#rssd-title .rssd-title-title").css({"width":title_title_width});
+}
+
+function starclick(it, id) {
+    // alert(id);
+    var element = it;
+    if ($(element).attr('class') == 'star') { // 未加星號 變 已加星號
+	$(element).attr('class', 'star1');
+
+	$.ajaxSetup({ cache: false });
+	var rssd_rssdstar_url = "apps/rssdetail/rssd_star.py?id=" + id + "&star=1"
+	$.getJSON(rssd_rssdstar_url,
+		  function(data) {
+
+		  });
+    } else {			// 已加星號 變 未加星號
+	$(element).attr('class', 'star');
+
+	$.ajaxSetup({ cache: false });
+	var rssd_rssdstar_url = "apps/rssdetail/rssd_star.py?id=" + id + "&star=0"
+	$.getJSON(rssd_rssdstar_url,
+		  function(data) {
+
+		  });
+    }
 }

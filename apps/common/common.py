@@ -2,6 +2,7 @@
 #-*- coding:utf-8 -*-
 # 公用程式
 
+import sqlite3
 import yaml
 
 def getdbname() :
@@ -29,6 +30,27 @@ def getlogname() :
         return yamlobj[0]["log"]
     except :
         return ""
+
+def checkfield(fieldname, tablename) :
+    """ 檢查 tablename 是否有欄位 fieldname """
+    dbname = getdbname()
+
+    dbconn = sqlite3.connect(dbname)
+    cursor = dbconn.cursor()
+
+    fieldnames = []
+    sql = "pragma table_info('" + tablename + "');"
+    cursor.execute(sql)
+    adata = cursor.fetchone()
+    while adata :
+        # print adata[1]
+        fieldnames.append(adata[1])
+        adata = cursor.fetchone()
+
+    cursor.close()
+    dbconn.close()
+
+    return (fieldname in fieldnames)
 
 
 if __name__ == "__main__" :

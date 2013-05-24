@@ -7,6 +7,12 @@ function setMainHeight() {
     var main_height = jQuery(window).height() - jQuery("#my-banner").outerHeight() - jQuery("#rss-toolbar").outerHeight();
     jQuery("#menu-td").css({"height": menu_height});
     jQuery("#main-td").css({"height": main_height});
+
+    // 調整 rssdetail 中標題 (rssd-title-title) 的長度
+    if (jQuery(".rssd-title-title").html() != null) {
+	var title_title_width = jQuery("#rssd-title").outerWidth() - jQuery(".rssd-main-title").outerWidth() - jQuery(".rssd-title-date").outerWidth() - 40;
+	jQuery("#rssd-title .rssd-title-title").css({"width":title_title_width});
+    }
 }
 
 var menu_height = jQuery(window).height() - jQuery("#my-banner").outerHeight() - jQuery("#addweb-div").outerHeight() - 30;

@@ -13,7 +13,7 @@ Screenshot
 * ubuntu
 * apache
 * sqlite3
-* python 2.X
+* python 2.7
   * sqlite3
   * json
   * yaml
@@ -25,7 +25,8 @@ ps: python 有使用到的套件要記得安裝
 * git clone https://github.com/carrl/rssreader.git
 * cd rssreader
 * cd install
-* python setup.py
+* python setup.py (只有第一次安裝時要執行)
+* python patchdb.py
 
 apache 設定
 -----------
@@ -46,4 +47,4 @@ apache 設定
 	設定 cron 來執行 apps/rss/rss2db.py, 固定一段時間更新 rss 資料
 	ex:
 	30 */2 * * * /PATH/apps/rss/rss2db.py
-	固定每兩個小時就執行一次
+	固定每兩個小時就執行一次 (間隔時間可以自行調整)

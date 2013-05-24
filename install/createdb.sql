@@ -20,5 +20,6 @@ create table if not exists rss_detail (
 	author varchar,
 	pubdate date,
 	updated date,
-	readed boolean default 0
+	readed boolean default 0,
+	star boolean default 0
 );
