@@ -107,6 +107,8 @@ class Rss2DB :
                             rssdetail["author"] = j["author"]["c"].decode("utf-8")
                         if (not rssdetail["pubdate"]) and j.has_key("pubDate") :
                             rssdetail["pubdate"] = datehandle.datehandle(j["pubDate"]["c"])
+                    if (not rssdetail["rssid"]) :
+                        rssdetail["rssid"] = rssdetail["link"]
                     if rssdetail["rssid"] :
                         self.save2db(rssdetail)
             elif rss.first_tag == "feed" :

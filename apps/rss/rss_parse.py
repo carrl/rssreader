@@ -8,6 +8,7 @@ import datehandle
 class RssParse:
     def __init__(self) :
         self.axml = ""
+        self.encoding = ""
         self.arss = ""
         self.first_tag = ""
 
@@ -16,6 +17,9 @@ class RssParse:
         inf = open(filename, "r")
         self.axml = inf.read()
         inf.close()
+
+        self.encoding = self.get_encoding(self.axml)
+        self.axml = self.to_utf8(self.axml)
 
         self.first_tag = self.find_tag(self.axml)
 
@@ -33,6 +37,8 @@ class RssParse:
             urlf = urllib2.urlopen(req, timeout=5)
             self.axml = urlf.read()
             urlf.close()
+            self.encoding = self.get_encoding(self.axml)
+            self.axml = self.to_utf8(self.axml)
         except :
             self.axml = ""
 
@@ -41,6 +47,26 @@ class RssParse:
         (before, self.arss, after) = self.get_content(self.axml, self.first_tag)
 
         self.rssdict = self.parse(self.arss)
+
+    def get_encoding(self, xml) :
+        """ 取得 <?xml ... ?> 中 encoding的值 """
+        if (xml.find("<?xml") != -1) :
+            apos = xml.find("<?xml")+len("<?xml")
+            bpos = xml.find("?>")
+            xmlstr = xml[apos:bpos].strip()
+            my_encoding = self.get_params(xmlstr)["encoding"]
+        else :
+            xmlstr = ""
+            my_encoding = ""
+        
+        return my_encoding
+
+    def to_utf8(self, str) :
+        """ 根據 self.encoding encode 到 utf-8 """
+        if ((string.upper(self.encoding) != "UTF-8") and (string.upper(self.encoding) != "")) :
+            return str.decode(self.encoding).encode("utf-8")
+        else :
+            return str
 
     def findapos(self, xml, tag) :
         """ 找到 xml裡 開始的 tag 位置 """
@@ -99,7 +125,7 @@ class RssParse:
         (bpos, bsize) = self.findbpos(xml, tag)
         before = xml[0:apos]
         axml = xml[apos:bpos+bsize]
-        after = xml[bpos+bsize:] 
+        after = xml[bpos+bsize:]
 
         return (before, axml, after)
 
@@ -165,7 +191,7 @@ class RssParse:
             if my_tag :
                 result1 = []
                 (before, axml, after) = self.get_content(xml, my_tag)
-        
+
                 if (before) :
                     result1.extend(xml)
 
@@ -228,7 +254,7 @@ class RssParse:
                     else :
                         new_rssdict.extend(j[i]["c"])
             rssdict = new_rssdict
-        
+
         return rssdict
 
     def show_allitems(self) :
@@ -247,6 +273,8 @@ class RssParse:
 
             for i in self.get_atom("rss.channel.item") :
                 for j in i :
+                    if j.has_key("rssid") :
+                        print "[rssid]:", j["rssid"]["c"]
                     if j.has_key("title") :
                         print "[title]:", j["title"]["c"]
                     if j.has_key("link") :
@@ -281,6 +309,8 @@ class RssParse:
 
             for i in self.get_atom("feed.entry") :
                 for j in i :
+                    if j.has_key("rssid") :
+                        print "[rssid]:", j["rssid"]["c"]
                     if j.has_key("title") :
                         print "[title]:", j["title"]["c"]
                     if j.has_key("link") :

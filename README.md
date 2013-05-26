@@ -38,6 +38,9 @@ apache 設定
 及
 
 	<Directory /PATH/rssreader>
+	  order deny,allow
+	  Deny from all
+	  Allow from 127.0.0.1
 	  Options +ExecCGI
 	</Directory>
 
