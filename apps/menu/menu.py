@@ -40,6 +40,10 @@ if __name__ == "__main__" :
 
     rsslist = rsslist()
 
+    search = common.getsearch()
     # menuobj = [{"title": "訂閱", "sub": rsslist}]
-    menuobj = [{"title": "星號", "link":"star", "sub":[]} ,{"title": "訂閱", "sub": rsslist}]
+    menuobj = [{"title":"星號", "link":"star", "sub":[]}, {"title":"訂閱", "sub":rsslist}]
+    if (search) :
+        menuobj.insert(0, {"title":"搜尋", "link":"search", "sub":[]})
+
     print json.dumps(menuobj)

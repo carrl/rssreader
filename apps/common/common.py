@@ -5,31 +5,43 @@
 import sqlite3
 import yaml
 
+class Conf :
+    def __init__(self) :
+        self.confs = {"db":None, "log":None, "search":None}
+        try :
+            yamlf = open("../../config/conf.yaml", "r")
+            yamlobj = yaml.load(yamlf)
+            for conf in self.confs :
+                if yamlobj[0].has_key(conf) :
+                    self.confs[conf] = yamlobj[0][conf]
+            yamlf.close()
+        except :
+            pass
+
+    def dbname(self) :
+        return self.confs["db"]
+
+    def logname(self) :
+        return self.confs["log"]
+
+    def search(self) :
+        return self.confs["search"]
+
+
 def getdbname() :
     """ 從 config/conf.yaml 取得 db 路徑 """
-    try :
-        yamlf = open("../../config/conf.yaml", "r")
-
-        yamlobj = yaml.load(yamlf)
-
-        yamlf.close()
-
-        return yamlobj[0]["db"]
-    except :
-        return ""
+    conf = Conf();
+    return conf.dbname()
 
 def getlogname() :
     """ 從 config/conf.yaml 取得 log 檔案路徑 """
-    try :
-        yamlf = open("../../config/conf.yaml", "r")
+    conf = Conf();
+    return conf.logname()
 
-        yamlobj = yaml.load(yamlf)
-
-        yamlf.close()
-
-        return yamlobj[0]["log"]
-    except :
-        return ""
+def getsearch() :
+    """ 從 config/conf.yaml 取得 search 的值 """
+    conf = Conf();
+    return conf.search()
 
 def checkfield(fieldname, tablename) :
     """ 檢查 tablename 是否有欄位 fieldname """
@@ -56,3 +68,4 @@ def checkfield(fieldname, tablename) :
 if __name__ == "__main__" :
     print getdbname()
     print getlogname()
+    print getsearch()

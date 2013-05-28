@@ -1,6 +1,6 @@
 
 var rss_hashid = "";
-var show_mode = 2;
+var show_mode = 2;		// 顯示模式, 1:顯示全部, 2:僅顯示未閱讀
 var rssdlast = 0;		// 是否已到最後
 var rssdloading = 0;		// 是否在 loading 中
 
@@ -84,8 +84,11 @@ function rssd_cancel(hashid) {
     }
 }
 
-function rssd_list(atype ,hashid) {
+function rssd_list(atype ,hashid, keyword) {
     // 顯示某網頁的 rss 列表
+    // atype==0 : 一般情形
+    // atype==1 : 檢視 星號List
+    // atype==2 : 搜尋
 
     jQuery("#main-td").unbind("scroll");
 
@@ -93,8 +96,14 @@ function rssd_list(atype ,hashid) {
     rssdlast = 0;
     rssdloading = 0;
 
+    var keyword = "";
+    if (atype == 2) {
+	keyword = jQuery("#keyword").val();
+    }
+
     $.ajaxSetup({ cache: false });
-    var rssd_list_url = "apps/rssdetail/rssd_list.py?type=" + atype + "&id=" + hashid + "&showmode=" + show_mode;
+    var rssd_list_url = "apps/rssdetail/rssd_list.py?type=" + atype + "&id=" + hashid + "&keyword=" + keyword + "&showmode=" + show_mode;
+    // alert(rssd_list_url);
     $.ajaxSettings.async = false;
     $.getJSON(rssd_list_url,
 	  function(data) {
@@ -109,7 +118,7 @@ function rssd_list(atype ,hashid) {
 		      rssd_list_str += "<div class='star' onclick='starclick(this, " + rssd_list[i].id + ");'></div>";
 		  }
 		  rssd_list_str += "<div id='rssd-title' onclick='rssd_detail(" + rssd_list[i].id + ")'>";
-		  if (atype == 1) {
+		  if (atype != 0) {
 		      rssd_list_str += "<div class='rssd-main-title'>" + rssd_list[i].main_title + "</div>";
 		  }
 		  if (rssd_list[i].readed != 1) {
@@ -144,7 +153,9 @@ function rssd_list(atype ,hashid) {
 		  toolbar_str += "<button onclick='rssd_list(1, \"\")'>reload</button>&nbsp;";
 	      }
 
-	      jQuery("#rss-toolbar").html(toolbar_str);
+	      if (atype != 2) {
+		  jQuery("#rss-toolbar").html(toolbar_str);
+	      }
 	      jQuery("#rss-title").html(data.title);
 	      jQuery("#main").html(rssd_list_str);
 
@@ -321,13 +332,20 @@ function showmode_button_title() {
 function loadmoredata(atype) {
     // load 進更多資料
     rssdloading = 1;
+
+    var keyword = "";
+    if (atype == 2) {
+	keyword = jQuery("#keyword").val();
+    }
+
     if (rssdlast != 1) {
 	var last_rssdlist = jQuery("#main").children(":last").attr("id");
 	if (typeof(last_rssdlist) != "undefined") {
 	    var lastid = last_rssdlist.split("-").reverse()[0];
 
 	    $.ajaxSetup({ cache: false });
-	    var rssd_loadmoredata_url = "apps/rssdetail/rssd_list.py?type=" + atype + "&id=" + rss_hashid + "&showmode=" + show_mode + "&lastid=" + lastid;
+	    var rssd_loadmoredata_url = "apps/rssdetail/rssd_list.py?type=" + atype + "&id=" + rss_hashid + "&keyword=" + keyword + "&showmode=" + show_mode + "&lastid=" + lastid;
+	    // alert(rssd_loadmoredata_url);
 	    $.ajaxSettings.async = false;
 	    $.getJSON(rssd_loadmoredata_url,
     		      function(data) {
@@ -343,7 +361,7 @@ function loadmoredata(atype) {
 				      rssd_list_str += "<div class='star' onclick='starclick(this, " + rssd_list[i].id + ");'></div>";
 				  }
 				  rssd_list_str += "<div id='rssd-title' onclick='rssd_detail(" + rssd_list[i].id + ")'>";
-				  if (atype == 1) {
+				  if (atype != 0) {
 				      rssd_list_str += "<div class='rssd-main-title'>" + rssd_list[i].main_title + "</div>";
 				  }
 				  if (rssd_list[i].readed != 1) {
@@ -401,4 +419,17 @@ function starclick(it, id) {
 
 		  });
     }
+}
+
+function rssd_search() {
+    // 搜尋
+    var toolbar_str = "";
+    toolbar_str += "Search:&nbsp;<input id='keyword' type='text'></input>&nbsp;";
+    toolbar_str += "<button onclick='rssd_list(2, \"\")'>Search</button>&nbsp;";
+
+    jQuery("#rss-toolbar").html(toolbar_str);
+    jQuery("#rss-title").html("搜尋");
+    jQuery("#main").html("");
+
+    jQuery("#keyword").focus();
 }

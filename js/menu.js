@@ -50,7 +50,9 @@ function menu_click(it, link) {
     if ((typeof(link) != "undefined") && (link != "")) {
 	if (link == "star") {	// 星號 list
 	    rssd_list(1, "");
-	}  else {		// 一般
+	} else if (link == "search") { // 搜尋
+	    rssd_search();
+	} else {		// 一般
 	    rssd_list(0, link);
 	}
     }

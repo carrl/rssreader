@@ -26,8 +26,8 @@ ps: python 有使用到的套件要記得安裝
 * git clone https://github.com/carrl/rssreader.git
 * cd rssreader
 * cd install
-* python ./setup.py (只有第一次安裝時要執行)
-* sh ./patchdb.sh
+* ./setup.py (只有第一次安裝時要執行)
+* ./patchdb.sh
 
 apache 設定
 -----------
@@ -52,3 +52,10 @@ apache 設定
 	ex:
 	30 */2 * * * /PATH/apps/rss/rss2db.py
 	固定每兩個小時就執行一次 (間隔時間可以自行調整)
+
+搜尋功能
+--------
+	要開啟 搜尋 功能, 必須在 config/conf.yaml 增加一行
+	search: 1
+	
+	PS: 搜尋功能會將資料中的 HTML描述語言 也列入搜尋
