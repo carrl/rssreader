@@ -60,6 +60,13 @@ function HideAllPop(e) {
     } else {
 	jQuery("#showmode").hide();
     }
+
+    // 當 click 不是在 TAG 按鈕處, 就關閉 tag div
+    if ((jQuery(e.target)[0].id == "tag_option") || (jQuery(e.target)[0].id == "tag_button")) {
+	return;
+    } else {
+	jQuery("#tag_option").hide();
+    }
 }
 
 function start() {
@@ -91,4 +98,6 @@ jQuery(document).ready(function() {
     jQuery("#main").html("<div style='text-align:center; font-size:30px;'>Welcome</div>");
 
     $(document).bind('click', HideAllPop);
+
+    get_tags();
 });

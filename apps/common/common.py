@@ -43,6 +43,26 @@ def getsearch() :
     conf = Conf();
     return conf.search()
 
+def checktable(tablename) :
+    """ 檢查 tablename 是否存在 """
+    dbname = getdbname()
+
+    dbconn = sqlite3.connect(dbname)
+    cursor = dbconn.cursor()
+
+    tablenames = []
+    sql = "select name from sqlite_master"
+    cursor.execute(sql)
+    adata = cursor.fetchone()
+    while adata :
+        tablenames.append(adata[0])
+        adata = cursor.fetchone()
+
+    cursor.close()
+    dbconn.close()
+
+    return (tablename in tablenames)
+
 def checkfield(fieldname, tablename) :
     """ 檢查 tablename 是否有欄位 fieldname """
     dbname = getdbname()

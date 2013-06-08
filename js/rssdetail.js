@@ -3,6 +3,9 @@ var rss_hashid = "";
 var show_mode = 2;		// 顯示模式, 1:顯示全部, 2:僅顯示未閱讀
 var rssdlast = 0;		// 是否已到最後
 var rssdloading = 0;		// 是否在 loading 中
+var tags = [];
+var tag_selected = [];
+var tagid = -1;
 
 function addweb() {
     // 顯示 訂閱 視窗, 讓 user 輸入要訂閱的網站 URL
@@ -84,11 +87,12 @@ function rssd_cancel(hashid) {
     }
 }
 
-function rssd_list(atype ,hashid, keyword) {
+function rssd_list(atype ,hashid) {
     // 顯示某網頁的 rss 列表
     // atype==0 : 一般情形
     // atype==1 : 檢視 星號List
     // atype==2 : 搜尋
+    // atype==3 : TAG
 
     jQuery("#main-td").unbind("scroll");
 
@@ -102,7 +106,8 @@ function rssd_list(atype ,hashid, keyword) {
     }
 
     $.ajaxSetup({ cache: false });
-    var rssd_list_url = "apps/rssdetail/rssd_list.py?type=" + atype + "&id=" + hashid + "&keyword=" + keyword + "&showmode=" + show_mode;
+    // var rssd_list_url = "apps/rssdetail/rssd_list.py?type=" + atype + "&id=" + hashid + "&keyword=" + keyword + "&showmode=" + show_mode;
+    var rssd_list_url = "apps/rssdetail/rssd_list.py?type=" + atype + "&id=" + hashid + "&keyword=" + keyword + "&showmode=" + show_mode + "&tagid=" + tagid;
     // alert(rssd_list_url);
     $.ajaxSettings.async = false;
     $.getJSON(rssd_list_url,
@@ -141,25 +146,37 @@ function rssd_list(atype ,hashid, keyword) {
 
 	      var toolbar_str = "";
 	      if (atype == 0) {
-		  toolbar_str += "<button onclick='rssd_reload(\"" + hashid +"\")'>reload</button>&nbsp;";
+		  toolbar_str += "<button class='reload_button' onclick='rssd_reload(\"" + hashid +"\")'>reload</button>&nbsp;";
 		  toolbar_str += "<button onclick='rssd_markasread(\"" + hashid + "\")'>全部標示為已閱讀</button>&nbsp;";
 		  toolbar_str += "<button id='showmode_button' onclick='showmode(this)'>show mode</button>";
 		  toolbar_str += "<div id='showmode' style='display:none;'>";
-		  toolbar_str += "<div class='showmode-item' onclick='showmode_choice(1)'><div id='showmode1'>&nbsp;</div>顯示全部</div>";
-		  toolbar_str += "<div class='showmode-item' onclick='showmode_choice(2)'><div id='showmode2'>&nbsp;</div>僅顯示未閱讀</div>";
+		  toolbar_str += "<div class='showmode-item' onclick='showmode_choice(0,1)'><div id='showmode1'>&nbsp;</div>顯示全部</div>";
+		  toolbar_str += "<div class='showmode-item' onclick='showmode_choice(0,2)'><div id='showmode2'>&nbsp;</div>僅顯示未閱讀</div>";
 		  toolbar_str += "</div>&nbsp;";
+		  toolbar_str += "<button id='tag_button' onclick='tag_select(this)'>TAG</button>&nbsp;";
+		  toolbar_str += "<div id='tag_option' style='display:none;'>";
+		  toolbar_str += "</div>";
 		  toolbar_str += "<button class='rssd_cancel_button' onclick='rssd_cancel(\"" + hashid +"\")'>取消訂閱</button>&nbsp;";
 	      } else if (atype == 1) {
 		  toolbar_str += "<button onclick='rssd_list(1, \"\")'>reload</button>&nbsp;";
+	      } else if (atype == 3) {
+		  // toolbar_str += "<button onclick='rssd_list(3, \"\")'>reload</button>&nbsp;";
+		  toolbar_str += "<button id='showmode_button' onclick='showmode(this)'>show mode</button>";
+		  toolbar_str += "<div id='showmode' style='display:none;'>";
+		  toolbar_str += "<div class='showmode-item' onclick='showmode_choice(3,1)'><div id='showmode1'>&nbsp;</div>顯示全部</div>";
+		  toolbar_str += "<div class='showmode-item' onclick='showmode_choice(3,2)'><div id='showmode2'>&nbsp;</div>僅顯示未閱讀</div>";
+		  toolbar_str += "</div>&nbsp;";
 	      }
 
 	      if (atype != 2) {
 		  jQuery("#rss-toolbar").html(toolbar_str);
 	      }
+	      if (atype == 0) {
+		  tag_choice(rss_hashid, -1, -1);
+	      }
 	      jQuery("#rss-title").html(data.title);
 	      jQuery("#main").html(rssd_list_str);
 
-	      // alert(jQuery(".rssd-main-title").html());
 	      var title_title_width = jQuery("#rssd-title").outerWidth() - jQuery(".rssd-main-title").outerWidth() - jQuery(".rssd-title-date").outerWidth() - 40;
 	      // alert(title_title_width);
 	      jQuery("#rssd-title .rssd-title-title").css({"width":title_title_width});
@@ -167,9 +184,9 @@ function rssd_list(atype ,hashid, keyword) {
 	      // 更新 unreadcnt
 	      if (atype == 0) {
 		  if (data["unreadcnt"] != 0) {
-		      jQuery("#unread-"+data["hashid"]).text(data["unreadcnt"]);
+		      jQuery("div[class=menu-unread][rsshashid="+data["hashid"]+"]").text(data["unreadcnt"]);
 		  } else {
-		      jQuery("#unread-"+data["hashid"]).text("");
+		      jQuery("div[class=menu-unread][rsshashid="+data["hashid"]+"]").html("&nbsp;");
 		  }
 	      }
 	  });
@@ -177,7 +194,7 @@ function rssd_list(atype ,hashid, keyword) {
 
     jQuery("#main-td").scrollTop(0);
 
-    if (atype == 0) {
+    if (atype == 0 || atype == 3) {
 	showmode_button_title();
     }
 
@@ -235,6 +252,7 @@ function rssd_detail(id) {
 	jQuery(rssd_title_obj).siblings(":first").css("background-color", "#c1ffc1");
 	rssd_detail_readed(rssd_title_obj, id);
     }
+    recalc_tagunread();
 }
 
 function rssd_list_unselect() {
@@ -254,10 +272,11 @@ function rssd_detail_readed(aobj, id) {
 	      function(data) {
 		  // 更新 unreadcnt
 		  if (data["unreadcnt"] != 0) {
-		      jQuery("#unread-"+data["hashid"]).text(data["unreadcnt"]);
+		      jQuery("div[class=menu-unread][rsshashid="+data["hashid"]+"]").text(data["unreadcnt"]);
 		  } else {
-		      jQuery("#unread-"+data["hashid"]).text("");
+		      jQuery("div[class=menu-unread][rsshashid="+data["hashid"]+"]").html("&nbsp;");
 		  }
+		  recalc_tagunread();
 	      });
 }
 
@@ -275,6 +294,7 @@ function rssd_markasread(hashid) {
     $.ajaxSettings.async = true;
 
     rssd_list(0, hashid);
+    recalc_tagunread();
 }
 
 function rssd_reload(hashid) {
@@ -287,6 +307,7 @@ function rssd_reload(hashid) {
     $.getJSON(rss_rss2db_url,
 	      function(data) {
 		  rssd_list(0, hashid);
+		  recalc_tagunread();
 		  jQuery.unblockUI();
 	      });
     // $.ajaxSettings.async = true;
@@ -313,11 +334,15 @@ function showmode(it) {
     jQuery("#showmode").toggle();
 }
 
-function showmode_choice(mode) {
+function showmode_choice(atype, mode) {
     // 改變 showmode, 並重新顯示
     show_mode = mode;
 
-    rssd_list(0, rss_hashid);
+    if (atype == 3) {
+	rssd_list(3, "");
+    } else {
+	rssd_list(0, rss_hashid);
+    }
 }
 
 function showmode_button_title() {
@@ -344,7 +369,7 @@ function loadmoredata(atype) {
 	    var lastid = last_rssdlist.split("-").reverse()[0];
 
 	    $.ajaxSetup({ cache: false });
-	    var rssd_loadmoredata_url = "apps/rssdetail/rssd_list.py?type=" + atype + "&id=" + rss_hashid + "&keyword=" + keyword + "&showmode=" + show_mode + "&lastid=" + lastid;
+	    var rssd_loadmoredata_url = "apps/rssdetail/rssd_list.py?type=" + atype + "&id=" + rss_hashid + "&keyword=" + keyword + "&showmode=" + show_mode + "&lastid=" + lastid + "&tagid=" + tagid;
 	    // alert(rssd_loadmoredata_url);
 	    $.ajaxSettings.async = false;
 	    $.getJSON(rssd_loadmoredata_url,
@@ -432,4 +457,102 @@ function rssd_search() {
     jQuery("#main").html("");
 
     jQuery("#keyword").focus();
+}
+
+function get_tags() {
+    // 取得 TAG List
+    $.ajaxSetup({ cache: false });
+    var rssd_taglist_url = "apps/rssdetail/rssd_taglist.py";
+    $.ajaxSettings.async = false;
+    $.getJSON(rssd_taglist_url,
+	      function(data) {
+		  tags = data.taglist;
+	      });
+    $.ajaxSettings.async = true;
+    jQuery("#tag_option").hide();
+}
+
+function new_tag() {
+    // 新增 新的TAG
+    var tagname = prompt("TAG名稱??");
+    // alert(tagname);
+
+    $.ajaxSetup({ cache: false });
+    var rssd_newtag_url = "apps/rssdetail/rssd_newtag.py?tagname=" + tagname;
+    $.ajaxSettings.async = false;
+    $.getJSON(rssd_newtag_url,
+	      function(data) {
+		  tags = data.taglist;
+		  tag_options();
+	      });
+    $.ajaxSettings.async = true;
+    jQuery("#tag_option").hide();
+}
+
+function tag_select(it) {
+    // 顯示/隱藏 TAG 選擇視窗
+    var element = it;
+    var apos = $(element).offset();
+
+    var xx = apos.left;
+    var yy = apos.top + $(element).outerHeight();
+
+    jQuery("#tag_option").css({"left":xx, "top":yy});
+
+    jQuery("#tag_option").toggle();
+}
+
+function tag_options() {
+    // 產生 TAG 選項
+    var tag_option_str = "";
+    for (var i=0; i<tags.length; i++) {
+	if (jQuery.inArray(tags[i].id, tag_selected) != -1) {
+	    tag_option_str += "<div class='tag_item' onclick='tag_choice(\"" + rss_hashid + "\"," + tags[i].id + ",0)'><div class='tag_checkmark' my_selected='1'>&nbsp;</div>" + tags[i].name + "</div>";
+	} else {
+	    tag_option_str += "<div class='tag_item' onclick='tag_choice(\"" + rss_hashid + "\"," + tags[i].id + ",1)'><div class='tag_checkmark' my_selected='0'>&nbsp;</div>" + tags[i].name + "</div>";
+	}
+    }
+    tag_option_str += "<div class='tag_item' style='border-top:1px solid #cccccc;' onclick='new_tag()'><div class='tag_checkmark' my_selected='0'>&nbsp;</div>新增TAG</div>";
+
+    jQuery("#tag_option").html(tag_option_str);
+
+    // 將 attr my_selected=1 的加上 打勾圖示
+    jQuery(".tag_checkmark[my_selected=1]").html("<img src='images/checkmark.png'></img>");
+}
+
+function tag_choice(hashid, tagid, sel) {
+    // 加上 tag
+    // alert(hashid);
+    $.ajaxSetup({ cache: false });
+    var rssd_tagchoice_url = "apps/rssdetail/rssd_tagchoice.py?hashid=" + hashid + "&tagid=" + tagid + "&sel=" + sel;
+    $.ajaxSettings.async = false;
+    $.getJSON(rssd_tagchoice_url,
+    	      function(data) {
+		  tag_selected = data["tagselected"];
+		  // alert(tag_selected);
+    	      });
+    $.ajaxSettings.async = true;
+
+    tag_options();
+    jQuery("#tag_option").hide();
+}
+
+function recalc_tagunread() {
+    // 重新計算 各個TAG 的未讀數量
+    jQuery("div[id^=menu-tag]").parent().siblings("div[class='menu-sub']").each(function(data) {
+	var taghashid = $(this).attr("rsshashid");
+    	var tag_unread = 0;
+    	$(this).find("div[class=menu-unread]").each(function(data) {
+    	    var unread_num = parseInt($(this).text(), 10);
+    	    if (isNaN(unread_num) == false) {
+    		tag_unread = tag_unread + unread_num;
+    	    }
+    	});
+    	// alert(tag_unread);
+	if (tag_unread > 0) {
+	    jQuery("div[class^=menu-unread][rsshashid=" + taghashid + "]").html(tag_unread).addClass("menu-unread-tag");
+	} else {
+	    jQuery("div[class^=menu-unread][rsshashid=" + taghashid + "]").html("&nbsp;").removeClass("menu-unread-tag");;
+	}
+    });
 }

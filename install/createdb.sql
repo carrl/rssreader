@@ -23,3 +23,14 @@ create table if not exists rss_detail (
 	readed boolean default 0,
 	star boolean default 0
 );
+
+create table if not exists tags (
+       id integer primary key autoincrement,
+       tname varcar
+);
+
+create table if not exists tag_detail (
+       id integer primary key autoincrement,
+       tid integer,
+       rid integer
+);

@@ -7,6 +7,7 @@ Screenshot
 ----------
 ![圖片2](https://github.com/carrl/rssreader/raw/master/screenshot/screenshot2.png)
 ![圖片3](https://github.com/carrl/rssreader/raw/master/screenshot/screenshot3.png)
+![圖片4](https://github.com/carrl/rssreader/raw/master/screenshot/screenshot4.png)
 
 我的環境
 --------
@@ -27,7 +28,7 @@ ps: python 有使用到的套件要記得安裝
 * cd rssreader
 * cd install
 * ./setup.py (只有第一次安裝時要執行)
-* ./patchdb.sh
+* ./patchdb.sh (有 git pull 後就要執行)
 
 apache 設定
 -----------
@@ -41,6 +42,7 @@ apache 設定
 	  order deny,allow
 	  Deny from all
 	  Allow from 127.0.0.1
+	  Allow from localhost
 	  Options +ExecCGI
 	</Directory>
 

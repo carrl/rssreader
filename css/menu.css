@@ -1,0 +1,62 @@
+
+.menu-start {
+    margin:1px 5px;
+}
+
+.menu-item {
+    margin:1px 0;
+    overflow:auto;
+}
+
+.menu-point {
+    float:left;
+    width:20px;
+    height:20px;
+    background-image:url(../images/arrow_right.png);
+    background-repeat:no-repeat;
+    background-position:center center; 
+}
+
+.menu-point:hover {
+    background-color:#e5ecf5;
+    cursor:pointer;
+}
+
+.menu-title {
+    width:148px;
+    height:20px;
+    background-color:#ffffff;
+    overflow:hidden;
+    white-space:nowrap;
+    float:left;
+}
+
+.menu-title:hover {
+    background-color:#e5ecf5;
+    cursor:pointer;
+}
+
+.menu-unread {
+    padding-left:10px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-align:right;
+}
+
+.menu-unread-tag {
+    padding:0 5px 0 5px;
+    overflow:hidden;
+    white-space:nowrap;
+    text-align:center;
+    background-color:#ffc0cb;
+    -moz-border-radius: 8px; /* Firefox */
+    -webkit-border-radius: 8px; /* Safari, Chrome */
+    -khtml-border-radius: 8px; /* Konqueror */
+    border-radius: 8px; /* Opera 10.50 and later (CSS3 standard) */
+    behavior: url(border-radius.htc); /* IE6, IE7, IE8 */
+}
+
+.menu-sub {
+    margin:0 5px 0 15px;
+    display:none;
+}

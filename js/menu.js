@@ -1,41 +1,41 @@
 
 var menu_str = "";
 function show_menu(menuobj, menuid) {
-    menu_str += "<table width='100%' border='0'>\n";
+    menu_str += "<div class='menu-start'>\n";
     for (var i=0; i<menuobj.length; i++) {
-	var mid = menuid + (i+1);
+	var mid = menuid + "-" + (i+1);
 	if (typeof(menuobj[i].sub) != "undefined") {
-	    menu_str += "<tr onMouseOver=\"bgColor='#E5ECF5'; this.style.cursor='pointer'\" onMouseOut=\"bgColor='FFFFFF'\">";
-	    menu_str += "<td width='6px' align='center' valign='middle' onMouseOver='this.style.cursor=\"pointer\"' onclick='menu_toggle(\"" + mid + "\");'>";
-	    menu_str += "<img src='images/arrow_right.png' />";
-	    menu_str += "</td>";
+	    menu_str += "<div class='menu-item'>";
+	    menu_str += "<div class='menu-point' onclick='menu_toggle(\"" + mid + "\");'></div>";
 	    if (typeof(menuobj[i].link) != "undefined") {
-		menu_str += "<td onClick='menu_click(this, \"" + menuobj[i].link + "\");'>" + menuobj[i].title + "</td>";
+		menu_str += "<div class='menu-title' id='menu-" + menuobj[i].link + "' onclick='menu_click(this, \"" + menuobj[i].link + "\");'>" + menuobj[i].title + "</div>";
 	    } else {
-		menu_str += "<td onClick='menu_toggle(\"" + mid + "\");'>" + menuobj[i].title + "</td>";
+		menu_str += "<div class='menu-title' id='menu-" + menuobj[i].link + "' onclick='menu_toggle(\"" + mid + "\");'>" + menuobj[i].title + "</div>";
 	    }
-	    menu_str += "</tr>\n";
+	    menu_str += "<div class='menu-unread' rsshashid='" + menuobj[i].link + "'>&nbsp;</div>";
+	    menu_str += "</div>\n";
 
-	    menu_str += "<tr><td></td><td><div id='" + mid +"'>";
-	    show_menu(menuobj[i].sub, mid);
-	    menu_str += "</div></td></tr>\n";
+	    if (menuobj[i].sub != "") {
+		menu_str += "<div id='" + mid + "' class='menu-sub' rsshashid='" + menuobj[i].link+ "'>";
+		show_menu(menuobj[i].sub, mid);
+		menu_str += "</div>\n";
+	    }
 	} else {
+	    menu_str += "<div class='menu-item'>";
 	    if (typeof(menuobj[i].link) != "undefined") {
-		menu_str += "<td onMouseOver=\"bgColor='#E5ECF5'; this.style.cursor='pointer'\" onMouseOut=\"bgColor='FFFFFF'\" onClick='menu_click(this,\"" + menuobj[i].link + "\");'>";
+		menu_str += "<div id='menu_" + menuobj[i].link + "' class='menu-title' onclick='menu_click(this,\"" + menuobj[i].link + "\");' title='" + menuobj[i].title + "'>" + menuobj[i].title + "</div>";
 	    } else {
-		menu_str += "<td onMouseOver=\"bgColor='#E5ECF5'; this.style.cursor='pointer'\" onMouseOut=\"bgColor='FFFFFF'\">";
+		menu_str += "<div id='menu_" + menuobj[i].link + "' class='menu-title' title='" + menuobj[i].title + "'>" + menuobj[i].title + "</div>";
 	    }
-	    menu_str += "<div id='menu_" + menuobj[i].link + "' style='overflow:hidden; white-space:nowrap; width:160px;' title='" + menuobj[i].title + "'>" + menuobj[i].title + "</div>";
-	    menu_str += "</td><td>";
 	    if (menuobj[i].unread != 0) {
-		menu_str += "<div style='overflow:hidden; white-space:nowrap; text-align:right;' id='unread-" + menuobj[i].link + "'>" + menuobj[i].unread + "</div>";
+		menu_str += "<div class='menu-unread' rsshashid='" + menuobj[i].link + "'>" + menuobj[i].unread + "</div>";
 	    } else {
-		menu_str += "<div style='overflow:hidden; white-space:nowrap; text-align:right;' id='unread-" + menuobj[i].link + "'>&nbsp;</div>";
+		menu_str += "<div class='menu-unread' rsshashid='" + menuobj[i].link + "'>&nbsp;</div>";
 	    }
-	    menu_str += "</td></tr>\n";
+	    menu_str += "</div>";
 	}
     }
-    menu_str += "</table>\n";
+    menu_str += "</div>\n";
 }
 
 function menu_toggle(menuid) {
@@ -43,8 +43,8 @@ function menu_toggle(menuid) {
 }
 
 function menu_click(it, link) {
-    jQuery("#menu td").css({'color': '#000000', 'font-weight': 'normal'});
-    $(it).css({'color': 'blue', 'font-weight': 'bold'});
+    jQuery("#menu").find("div[class^=menu]").css({'color':'#000000', 'font-weight':'normal'});
+    $(it).css({'color':'blue', 'font-weight':'bold'});
     var menu_title = $(it).text();
     jQuery("#main").html(menu_title);
     if ((typeof(link) != "undefined") && (link != "")) {
@@ -52,6 +52,9 @@ function menu_click(it, link) {
 	    rssd_list(1, "");
 	} else if (link == "search") { // 搜尋
 	    rssd_search();
+	} else if (link.substring(0,3) == "tag") { // TAG
+	    tagid = parseInt(link.substring(4,link.length), 10);
+	    rssd_list(3, "");
 	} else {		// 一般
 	    rssd_list(0, link);
 	}
@@ -61,10 +64,15 @@ function menu_click(it, link) {
 function menu_start() {
     $.ajaxSetup({ cache: false });
     var menu_conf_url = "apps/menu/menu.py"
+    $.ajaxSettings.async = false;
     $.getJSON(menu_conf_url,
 	      function(jsonobj) {
 		  menu_str = "";
 		  show_menu(jsonobj, "menu", "");
 		  jQuery("#menu").html(menu_str);
 	      });
+    $.ajaxSettings.async = true;
+
+    jQuery("div[id^=menu-tag]").parent().parent().parent().show();
+    recalc_tagunread();
 }

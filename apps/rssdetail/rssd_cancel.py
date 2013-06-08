@@ -42,6 +42,9 @@ def rssd_cancel(hashid) :
         sql2 = "delete from rss_detail where mainid=:mainid"
         cursor.execute(sql2, {"mainid": mainid})
 
+        sql3 = "delete from tag_detail where rid=:mainid"
+        cursor.execute(sql3, {"mainid": mainid})
+
         dbconn.commit()
 
     cursor.close()

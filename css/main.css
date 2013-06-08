@@ -104,7 +104,7 @@ button:hover {
 }
 
 #main-td {
-    vertical-align: top;
+    vertical-align:top;
     overflow-y:auto;
 }
 

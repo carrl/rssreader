@@ -28,6 +28,10 @@
     margin-top:10px;
 }
 
+.reload_button {
+    width:80px;
+}
+
 #showmode_button {
     width:120px;
 }
@@ -122,4 +126,35 @@
 
 .rssd-title-date {
     float:right;
+}
+
+#tag_button {
+    width:80px;
+}
+
+#tag_option {
+    position:absolute;
+    background-color:#f5f5f5;
+    width:180px;
+    border:solid 2px #cccccc;
+}
+
+.tag_item {
+    margin:3px;
+    padding:3px;
+    font-size:large;
+    text-align:left;
+}
+
+.tag_item:hover {
+    cursor:pointer;
+    background-color:#afeeee;
+}
+
+.tag_checkmark {
+    float:left;
+    width:20px;
+    height:20px
+    text-align:center;
+    vertical-align:center;
 }
