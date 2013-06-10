@@ -76,5 +76,5 @@ if __name__ == "__main__" :
         print json.dumps(rr)
     except :
         aid = ""
-        print "{'result': 'nook'}"
+        print json.dumps("{'result': 'nook'}")
 
