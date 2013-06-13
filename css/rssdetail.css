@@ -32,6 +32,10 @@
     width:80px;
 }
 
+.markasread {
+    background-color:#AFEEEE;
+}
+
 #showmode_button {
     width:120px;
 }

@@ -145,9 +145,9 @@ function rssd_list(atype ,hashid) {
 	      }
 
 	      var toolbar_str = "";
-	      if (atype == 0) {
+	      if (atype == 0) {	// 一般
 		  toolbar_str += "<button class='reload_button' onclick='rssd_reload(\"" + hashid +"\")'>reload</button>&nbsp;";
-		  toolbar_str += "<button onclick='rssd_markasread(\"" + hashid + "\")'>全部標示為已閱讀</button>&nbsp;";
+		  toolbar_str += "<button class='markasread' onclick='rssd_markasread(\"" + hashid + "\")'>全部標示為已閱讀</button>&nbsp;";
 		  toolbar_str += "<button id='showmode_button' onclick='showmode(this)'>show mode</button>";
 		  toolbar_str += "<div id='showmode' style='display:none;'>";
 		  toolbar_str += "<div class='showmode-item' onclick='showmode_choice(0,1)'><div id='showmode1'>&nbsp;</div>顯示全部</div>";
@@ -157,10 +157,11 @@ function rssd_list(atype ,hashid) {
 		  toolbar_str += "<div id='tag_option' style='display:none;'>";
 		  toolbar_str += "</div>";
 		  toolbar_str += "<button class='rssd_cancel_button' onclick='rssd_cancel(\"" + hashid +"\")'>取消訂閱</button>&nbsp;";
-	      } else if (atype == 1) {
+	      } else if (atype == 1) { // 星號
 		  toolbar_str += "<button onclick='rssd_list(1, \"\")'>reload</button>&nbsp;";
-	      } else if (atype == 3) {
+	      } else if (atype == 3) { // TAG
 		  // toolbar_str += "<button onclick='rssd_list(3, \"\")'>reload</button>&nbsp;";
+		  toolbar_str += "<button class='markasread' onclick='rssd_tag_markasread(\"" + hashid + "\")'>全部標示為已閱讀</button>&nbsp;";
 		  toolbar_str += "<button id='showmode_button' onclick='showmode(this)'>show mode</button>";
 		  toolbar_str += "<div id='showmode' style='display:none;'>";
 		  toolbar_str += "<div class='showmode-item' onclick='showmode_choice(3,1)'><div id='showmode1'>&nbsp;</div>顯示全部</div>";
@@ -283,24 +284,55 @@ function rssd_detail_readed(aobj, id) {
 
 function rssd_markasread(hashid) {
     // 將所有未讀 item 改為已閱讀
-
     var last_rssddate = jQuery("#main").children(":first").find(".rssd-title-date").attr("rssd_date");
     // alert(last_rssddate);
 
     if (typeof(last_rssddate) != "undefined") {
-	show_message("全部標示為已閱讀");
+	// show_message("全部標示為已閱讀");
+	$.blockUI({message: "處理中, 請稍候...", css:{"font-size":"20px"}});
 
-	$.ajaxSetup({ cache: false });
-	var rssd_markasread_url = "apps/rssdetail/rssd_markasread.py?id=" + hashid + "&lastdate=" + last_rssddate 
-	$.ajaxSettings.async = false;
-	$.getJSON(rssd_markasread_url,
-    		  function(data) {
+	setTimeout(function() {
+	    $.ajaxSetup({ cache: false });
+	    var rssd_markasread_url = "apps/rssdetail/rssd_markasread.py?id=" + hashid + "&lastdate=" + last_rssddate;
+	    $.ajaxSettings.async = false;
+	    $.getJSON(rssd_markasread_url,
+    		      function(data) {
 
-    		  });
-	$.ajaxSettings.async = true;
+    		      });
+	    $.ajaxSettings.async = true;
 
-	rssd_list(0, hashid);
-	recalc_tagunread();
+	    rssd_list(0, hashid);
+	    recalc_tagunread();
+	    $.unblockUI();
+	}, 500);
+    }
+}
+
+function rssd_tag_markasread() {
+    // 將目前 TAG 的所有 item 改為已閱讀
+    // alert("rssd_tag_markasread");
+    var last_rssddate = jQuery("#main").children(":first").find(".rssd-title-date").attr("rssd_date");
+    // alert(last_rssddate);
+
+    if (typeof(last_rssddate) != "undefined") {
+	// show_message("全部標示為已閱讀");
+	$.blockUI({message: "處理中, 請稍候...", css:{"font-size":"20px"}, fadeIn:0});
+
+	setTimeout(function() {
+	    $.ajaxSetup({ cache: false });
+	    var rssd_tag_markasread_url = "apps/rssdetail/rssd_tag_markasread.py?tagid=" + tagid + "&lastdate=" + last_rssddate;
+	    $.ajaxSettings.async = false;
+	    $.getJSON(rssd_tag_markasread_url,
+    		      function(data) {
+
+    		      });
+	    $.ajaxSettings.async = true;
+
+	    rssd_list(3, "");
+	    // recalc_tagunread();
+	    start();
+	    $.unblockUI();
+	}, 500);
     }
 }
 

@@ -39,11 +39,10 @@ apache 設定
 及
 
 	<Directory /PATH/rssreader>
+	  Options +ExecCGI
 	  order deny,allow
 	  Deny from all
 	  Allow from 127.0.0.1
-	  Allow from localhost
-	  Options +ExecCGI
 	</Directory>
 
 然後 **restart apache**

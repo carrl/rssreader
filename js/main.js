@@ -100,4 +100,6 @@ jQuery(document).ready(function() {
     $(document).bind('click', HideAllPop);
 
     get_tags();
+
+    // $(document).ajaxStart($.blockUI).ajaxStop($.unblockUI);
 });
