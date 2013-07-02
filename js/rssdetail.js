@@ -116,7 +116,8 @@ function rssd_list(atype ,hashid) {
 	      var rssd_list_str = "";
 
 	      for (var i=0; i<rssd_list.length; i++) {
-		  rssd_list_str += "<div id='rssd-list-" + rssd_list[i].id + "' style='border-bottom:2px solid #dddddd;'>";
+		  rssd_list_str += "<div id='rssd-list-" + rssd_list[i].id + "' class='rssd-list'>";
+		  rssd_list_str += "<div style='background-color:#F1F1F1;'>";
 		  if (rssd_list[i].star == 1) {
 		      rssd_list_str += "<div class='star1' onclick='starclick(this, " + rssd_list[i].id + ");'></div>";
 		  } else {
@@ -139,6 +140,7 @@ function rssd_list(atype ,hashid) {
 
 		  rssd_list_str += "<div class='rssd-title-date' rssd_date='" + rssd_list[i].pubdate + "'>" + ayear + "-" + amonth + "-" + aday + "</div>";
 
+		  rssd_list_str += "</div>";
 		  rssd_list_str += "</div>";
 		  rssd_list_str += "<div id='rssd-detail'></div>";
 		  rssd_list_str += "</div>";
@@ -176,7 +178,11 @@ function rssd_list(atype ,hashid) {
 	      if (atype == 0) {
 		  tag_choice(rss_hashid, -1, -1);
 	      }
-	      jQuery("#rss-title").html(data.title);
+	      var title_title = data.title;
+	      if (data.link) {
+	      	  title_title = "<a href='" + data.link + "' target='_blank'>" + data.title + "</a>";
+	      }
+	      jQuery("#rss-title").html(title_title);
 	      jQuery("#main").html(rssd_list_str);
 
 	      var title_title_width = jQuery("#rssd-title").outerWidth() - jQuery(".rssd-main-title").outerWidth() - jQuery(".rssd-title-date").outerWidth() - 40;
@@ -253,6 +259,8 @@ function rssd_detail(id) {
 	jQuery(rssd_title_obj).css("background-color", "#c1ffc1");
 	jQuery(rssd_title_obj).siblings(":first").css("background-color", "#c1ffc1");
 	rssd_detail_readed(rssd_title_obj, id);
+	var title_title_width = jQuery("#rssd-title").outerWidth() - jQuery(".rssd-main-title").outerWidth() - jQuery(".rssd-title-date").outerWidth() - 40;
+	jQuery("#rssd-title .rssd-title-title").css({"width":title_title_width});
     }
     recalc_tagunread();
 }

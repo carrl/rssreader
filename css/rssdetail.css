@@ -10,7 +10,13 @@
     cursor:pointer;
 }
 
+.rssd-list {
+    /* background-color:#f1f1f1; */
+    border-bottom:2px solid #dddddd;
+}
+
 #rssd-detail {
+    background-color:white;
     padding:0 10px;
 }
 

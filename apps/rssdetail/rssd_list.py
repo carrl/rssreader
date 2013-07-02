@@ -21,7 +21,7 @@ def cgiFieldStorageToDict( fieldStorage ):
     return params
 
 def rssd_dict(atype, hashid="", keyword="", showmode=1, lastid="", tagid=-1, cnt=30) :
-    result = {}
+    result = {"title":None, "link":None, "hashid":"", "unreadcnt":0, "detail":[]}
 
     if (atype == 0) :           # 一般情形
         dbname = common.getdbname()
@@ -29,7 +29,7 @@ def rssd_dict(atype, hashid="", keyword="", showmode=1, lastid="", tagid=-1, cnt
         dbconn = sqlite3.connect(dbname)
         cursor = dbconn.cursor()
 
-        sql = "select id,title,hashid,unreadcnt from rss_main where hashid=:hashid"
+        sql = "select id,title,link,hashid,unreadcnt from rss_main where hashid=:hashid"
         cursor.execute(sql, {"hashid": hashid})
 
         adata = cursor.fetchone()
@@ -37,8 +37,9 @@ def rssd_dict(atype, hashid="", keyword="", showmode=1, lastid="", tagid=-1, cnt
             mainid = adata[0]
             # print mainid
             result["title"] = adata[1]
-            result["hashid"] = adata[2]
-            result["unreadcnt"] = adata[3]
+            result["link"] = adata[2]
+            result["hashid"] = adata[3]
+            result["unreadcnt"] = adata[4]
 
             # 取得 lastid 的 pubdate
             lastpubdate = ""

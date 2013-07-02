@@ -23,9 +23,12 @@ class RssParse:
 
         self.first_tag = self.find_tag(self.axml)
 
-        (before, self.arss, after) = self.get_content(self.axml, self.first_tag)
-
-        self.rssdict = self.parse(self.arss)
+        end_tag = "</" + self.first_tag + ">"
+        if (self.axml.find(end_tag) != -1) : # 有發現結束的 tag (ex:</rss> or </feed>) 才執行 self.get_content
+            (before, self.arss, after) = self.get_content(self.axml, self.first_tag)
+            self.rssdict = self.parse(self.arss)
+        else :
+            self.rssdict = []
 
     def loadurl(self, url) :
         """ 從 URL 讀取資料 """
@@ -44,9 +47,12 @@ class RssParse:
 
         self.first_tag = self.find_tag(self.axml)
 
-        (before, self.arss, after) = self.get_content(self.axml, self.first_tag)
-
-        self.rssdict = self.parse(self.arss)
+        end_tag = "</" + self.first_tag + ">"
+        if (self.axml.find(end_tag) != -1) : # 有發現結束的 tag (ex:</rss> or </feed>) 才執行 self.get_content
+            (before, self.arss, after) = self.get_content(self.axml, self.first_tag)
+            self.rssdict = self.parse(self.arss)
+        else :
+            self.rssdict = []
 
     def get_encoding(self, xml) :
         """ 取得 <?xml ... ?> 中 encoding的值 """

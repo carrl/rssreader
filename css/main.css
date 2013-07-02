@@ -114,5 +114,13 @@ button:hover {
     padding:3px 10px;
 }
 
+#rss-title a:link {
+    color:blue;
+}
+
+#rss-title a:visited {
+    color:blue;
+}
+
 #main {
 }

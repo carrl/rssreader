@@ -7,6 +7,7 @@ import json
 import string
 import sqlite3
 import sys
+import urllib
 
 sys.path.append("../common")
 import common
@@ -28,7 +29,7 @@ def tag_rename(tagid, newname) :
         cursor = dbconn.cursor()
 
         sql = "update tags set tname=:newname where id=:tagid"
-        cursor.execute(sql, {"tagid":tagid, "newname":newname})
+        cursor.execute(sql, {"tagid":tagid, "newname":urllib.unquote(newname.decode("utf-8"))})
 
         dbconn.commit()
         cursor.close()
