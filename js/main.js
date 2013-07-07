@@ -90,6 +90,10 @@ function start() {
 
     // 產生 menu
     menu_start();
+
+    jQuery("#rss-toolbar").html("");
+    jQuery("#rss-title").html("");
+    jQuery("#main").html("<div style='text-align:center; font-size:30px;'>Welcome</div>");
 }
 
 jQuery(document).ready(function() {

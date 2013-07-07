@@ -163,7 +163,7 @@ function rssd_list(atype ,hashid) {
 		  toolbar_str += "<button onclick='rssd_list(1, \"\")'>reload</button>&nbsp;";
 	      } else if (atype == 3) { // TAG
 		  // toolbar_str += "<button onclick='rssd_list(3, \"\")'>reload</button>&nbsp;";
-		  toolbar_str += "<button class='markasread' onclick='rssd_tag_markasread(\"" + hashid + "\")'>全部標示為已閱讀</button>&nbsp;";
+		  toolbar_str += "<button class='markasread' onclick='rssd_tag_markasread(\"" + tagid + "\")'>全部標示為已閱讀</button>&nbsp;";
 		  toolbar_str += "<button id='showmode_button' onclick='showmode(this)'>show mode</button>";
 		  toolbar_str += "<div id='showmode' style='display:none;'>";
 		  toolbar_str += "<div class='showmode-item' onclick='showmode_choice(3,1)'><div id='showmode1'>&nbsp;</div>顯示全部</div>";
@@ -316,31 +316,51 @@ function rssd_markasread(hashid) {
     }
 }
 
-function rssd_tag_markasread() {
+function tag_markasread(id_name) {
     // 將目前 TAG 的所有 item 改為已閱讀
-    // alert("rssd_tag_markasread");
     var last_rssddate = jQuery("#main").children(":first").find(".rssd-title-date").attr("rssd_date");
     // alert(last_rssddate);
 
     if (typeof(last_rssddate) != "undefined") {
-	// show_message("全部標示為已閱讀");
-	$.blockUI({message: "處理中, 請稍候...", css:{"font-size":"20px"}, fadeIn:0});
+    	// show_message("全部標示為已閱讀");
+    	$.blockUI({message: "處理中, 請稍候...", css:{"font-size":"20px"}, fadeIn:0});
 
-	setTimeout(function() {
-	    $.ajaxSetup({ cache: false });
-	    var rssd_tag_markasread_url = "apps/rssdetail/rssd_tag_markasread.py?tagid=" + tagid + "&lastdate=" + last_rssddate;
-	    $.ajaxSettings.async = false;
-	    $.getJSON(rssd_tag_markasread_url,
+    	setTimeout(function() {
+    	    $.ajaxSetup({ cache: false });
+    	    var rssd_tag_markasread_url = "apps/rssdetail/rssd_tag_markasread.py?tagid=" + tagid + "&lastdate=" + last_rssddate;
+    	    $.ajaxSettings.async = false;
+    	    $.getJSON(rssd_tag_markasread_url,
     		      function(data) {
 
     		      });
-	    $.ajaxSettings.async = true;
+    	    $.ajaxSettings.async = true;
 
-	    rssd_list(3, "");
-	    // recalc_tagunread();
-	    start();
-	    $.unblockUI();
-	}, 500);
+    	    rssd_list(3, "");
+    	    // recalc_tagunread();
+    	    start();
+    	    $.unblockUI();
+    	}, 500);
+    }
+}
+
+function rssd_tag_markasread() {
+    // 將目前 TAG 的所有 item 改為已閱讀, 如果未讀數量超過 99, 要 confirm
+    // alert("rssd_tag_markasread");
+    var tagid_str = "";
+    for (var i=0; i<(3-(tagid+"").length); i++) {
+	tagid_str += "0";
+    }
+    tagid_str += tagid;
+
+    var id_name = "#menu-tag_" + tagid_str;
+
+    var tag_unread_cnt = jQuery(id_name).parent().find(".menu-unread-tag").html();
+    if (tag_unread_cnt > 99) {
+	if (confirm("確定要全部標示為已閱讀?") == true) {
+	    tag_markasread(id_name);
+	}
+    } else {
+	tag_markasread(id_name);
     }
 }
 
