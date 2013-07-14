@@ -65,6 +65,9 @@ class RssParse:
             xmlstr = ""
             my_encoding = ""
         
+	if my_encoding == "big5" :
+	    my_encoding = "cp950"
+
         return my_encoding
 
     def to_utf8(self, str) :

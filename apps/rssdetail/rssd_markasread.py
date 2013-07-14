@@ -35,7 +35,7 @@ def markasread(hashid, lastdate) :
 
         # 將某 hashid 的所有 子item 改為已閱讀
         cursor2 = dbconn.cursor()
-        sql2 = "update rss_detail set readed=1 where mainid=:mainid and pubdate<=:lastdate"
+        sql2 = "update rss_detail set readed=1 where mainid=:mainid and pubdate<=:lastdate and readed<>1"
         cursor2.execute(sql2, {"mainid":aid, "lastdate":lastdate})
         dbconn.commit()
 

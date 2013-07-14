@@ -116,7 +116,7 @@ function rssd_list(atype ,hashid) {
 	      var rssd_list_str = "";
 
 	      for (var i=0; i<rssd_list.length; i++) {
-		  rssd_list_str += "<div id='rssd-list-" + rssd_list[i].id + "' class='rssd-list'>";
+		  rssd_list_str += "<div id='rssd-list-" + rssd_list[i].id + "' class='rssd-list' my_selected='0'>";
 		  rssd_list_str += "<div style='background-color:#F1F1F1;'>";
 		  if (rssd_list[i].star == 1) {
 		      rssd_list_str += "<div class='star1' onclick='starclick(this, " + rssd_list[i].id + ");'></div>";
@@ -263,6 +263,11 @@ function rssd_detail(id) {
 	jQuery("#rssd-title .rssd-title-title").css({"width":title_title_width});
     }
     recalc_tagunread();
+
+    jQuery(".rssd-list").each( function() {
+	jQuery(this).attr("my_selected", "0");
+    });
+    jQuery(rssd_list_obj).attr("my_selected", "1");
 }
 
 function rssd_list_unselect() {
@@ -446,7 +451,7 @@ function loadmoredata(atype) {
 			  if (rssd_list.length > 0) {
 			      for (var i=0; i<rssd_list.length; i++) {
 				  var rssd_list_str = "";
-				  rssd_list_str += "<div id='rssd-list-" + rssd_list[i].id + "' style='border-bottom:2px solid #dddddd;'>";
+				  rssd_list_str += "<div id='rssd-list-" + rssd_list[i].id + "' class='rssd-list' my_selected='0'>";
 				  if (rssd_list[i].star == 1) {
 				      rssd_list_str += "<div class='star1' onclick='starclick(this, " + rssd_list[i].id + ");'></div>";
 				  } else {
@@ -651,4 +656,50 @@ function tag_rename() {
     		  });
 	$.ajaxSettings.async = true;
     }
+}
+
+function next_rssd() {
+    // 下一筆 rss
+    if (jQuery("#main").find(".rssd-list").length > 0) {
+	// alert("OK");
+	if (jQuery(".rssd-list[my_selected='1']").length > 0) {
+	    var next_rssd_id = jQuery(".rssd-list[my_selected='1']").next().attr("id")
+	    // alert(next_rssd_id);
+	    if (typeof(next_rssd_id) != "undefined") {
+		rssd_detail(next_rssd_id.split("-")[2]);
+	    }
+	} else {
+	    var first_rssd_id = jQuery(".rssd-list:first").attr("id");
+	    // alert(first_rssd_id);
+	    rssd_detail(first_rssd_id.split("-")[2]);
+	}
+    }
+}
+
+function prev_rssd() {
+    // 上一筆 rss
+    if (jQuery("#main").find(".rssd-list").length > 0) {
+	// alert("OK");
+	if (jQuery(".rssd-list[my_selected='1']").length > 0) {
+	    var prev_rssd_id = jQuery(".rssd-list[my_selected='1']").prev().attr("id");
+	    // alert(prev_rssd_id);
+	    if (typeof(prev_rssd_id) != "undefined") {
+		rssd_detail(prev_rssd_id.split("-")[2]);
+	    }
+	} else {
+	    var first_rssd_id = jQuery(".rssd-list:first").attr("id");
+	    // alert(first_rssd_id);
+	    rssd_detail(first_rssd_id.split("-")[2]);
+	}
+    }
+}
+
+function rssd_detail_hide() {
+    // 隱藏明細
+    jQuery(".rssd-list[my_selected='1']").find("#rssd-detail").hide();
+}
+
+function rssd_detail_show() {
+    // 顯示明細
+    jQuery(".rssd-list[my_selected='1']").find("#rssd-detail").show();
 }

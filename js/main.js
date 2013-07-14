@@ -106,4 +106,23 @@ jQuery(document).ready(function() {
     get_tags();
 
     // $(document).ajaxStart($.blockUI).ajaxStop($.unblockUI);
+
+    jQuery(document).keydown(function(evt) {
+	// if ((evt.which == 74) || (evt.which == 40)) {
+	if (evt.which == 74) {
+	    next_rssd();
+	}
+	// if ((evt.which == 75) || (evt.which == 38)) {
+	if (evt.which == 75) {
+	    prev_rssd();
+	}
+	// if ((evt.which == 72) || (evt.which == 37)) {
+	if (evt.which == 72) {
+	    rssd_detail_hide();
+	}
+	// if ((evt.which == 76) || (evt.which == 39)) {
+	if (evt.which == 76) {
+	    rssd_detail_show();
+	}
+    });
 });

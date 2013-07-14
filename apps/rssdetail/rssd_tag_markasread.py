@@ -29,7 +29,7 @@ def tag_markasread(tagid, lastdate) :
     try :
         # 將某 tag 的所有 子item 改為已閱讀
 
-        sql = "update rss_detail set readed=1 where mainid in (select rid from tag_detail where tid=:tagid) and pubdate<=:lastdate"
+        sql = "update rss_detail set readed=1 where mainid in (select rid from tag_detail where tid=:tagid) and pubdate<=:lastdate and readed<>1"
         cursor.execute(sql, {"tagid":tagid, "lastdate":lastdate})
         dbconn.commit()
 
